@@ -33,24 +33,27 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.google.android.gms:play-services-auth:15.0.0'
     testImplementation 'junit:junit:4.12'
 
-    implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:support-v13:27.1.1'
-    implementation 'com.android.support:support-compat:27.1.1'
-    implementation 'com.android.support:palette-v7:27.1.1'
-    implementation 'com.android.support:support-core-ui:27.1.1'
-    implementation 'com.android.support:support-core-utils:27.1.1'
+    implementation 'com.android.support:design:27.1.0'
+    implementation 'com.android.support:appcompat-v7:27.1.0'
+    implementation 'com.android.support:support-v13:27.1.0'
+    implementation 'com.android.support:support-compat:27.1.0'
+    implementation 'com.android.support:palette-v7:27.1.0'
+    implementation 'com.android.support:support-core-ui:27.1.0'
+    implementation 'com.android.support:support-core-utils:27.1.0'
 
     // Displaying images
     implementation 'com.github.bumptech.glide:glide:3.7.0'
-
     //Firebase dependencies
     implementation 'com.google.firebase:firebase-core:15.0.2'
-
     //Real Time database dependency
     implementation 'com.google.firebase:firebase-database:15.0.1'
+    // FirebaseUI for Firebase Auth
+    implementation 'com.firebaseui:firebase-ui-auth:3.3.1'
+    // FirebaseUI for Firebase Realtime Database
+    implementation 'com.firebaseui:firebase-ui-database:3.3.1'
 
 }
 

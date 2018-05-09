@@ -128,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        //This event listens for changes to the database and provides reading our friendlyMessage Java data
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
