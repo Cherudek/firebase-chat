@@ -10,10 +10,9 @@ repositories {
 android {
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
-
     defaultConfig {
         applicationId "com.google.firebase.udacity.friendlychat"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -29,13 +28,14 @@ android {
         exclude 'META-INF/LICENSE-FIREBASE.txt'
         exclude 'META-INF/NOTICE'
     }
+    productFlavors {
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.google.android.gms:play-services-auth:15.0.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.google.android.gms:play-services-auth:15.0.1'
     testImplementation 'junit:junit:4.12'
-
     implementation 'com.android.support:design:27.1.0'
     implementation 'com.android.support:appcompat-v7:27.1.0'
     implementation 'com.android.support:support-v13:27.1.0'
@@ -43,7 +43,6 @@ dependencies {
     implementation 'com.android.support:palette-v7:27.1.0'
     implementation 'com.android.support:support-core-ui:27.1.0'
     implementation 'com.android.support:support-core-utils:27.1.0'
-
     // Displaying images
     implementation 'com.github.bumptech.glide:glide:3.7.0'
     //Firebase dependencies
@@ -54,7 +53,6 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:3.3.1'
     // FirebaseUI for Firebase Realtime Database
     implementation 'com.firebaseui:firebase-ui-database:3.3.1'
-
 }
 
 apply plugin: 'com.google.gms.google-services'

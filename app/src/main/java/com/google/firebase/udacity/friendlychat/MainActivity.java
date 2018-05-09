@@ -22,7 +22,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.Layout;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,7 +30,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -39,6 +37,7 @@ import android.widget.RelativeLayout;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -88,16 +87,25 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
               //Check whether a user is signed in or not
-              FirebaseAuth auth = FirebaseAuth.getInstance();
-              if (auth.getCurrentUser() != null) {
+            //  FirebaseAuth auth = FirebaseAuth.getInstance();
 
-                // already signed in
+             FirebaseUser user = firebaseAuth.getCurrentUser();
+
+
+              if(user != null) {
+                //already signed in
+                  OnSignedInInitialised(user.getDisplayName());
+
                   RelativeLayout view = findViewById(R.id.main_activity);
                   Snackbar snackbar = Snackbar.make(view, R.string.signed_in, Snackbar.LENGTH_LONG);
                   snackbar.setAction("Action", null).show();
 
               } else {
                 // not signed in
+
+                  onSignedOutCleanUp();
+
+
                   startActivityForResult(
                       AuthUI.getInstance()
                           .createSignInIntentBuilder()
@@ -114,11 +122,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Initialize references to views
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mMessageListView = (ListView) findViewById(R.id.messageListView);
-        mPhotoPickerButton = (ImageButton) findViewById(R.id.photoPickerButton);
-        mMessageEditText = (EditText) findViewById(R.id.messageEditText);
-        mSendButton = (Button) findViewById(R.id.sendButton);
+        mProgressBar =  findViewById(R.id.progressBar);
+        mMessageListView = findViewById(R.id.messageListView);
+        mPhotoPickerButton =  findViewById(R.id.photoPickerButton);
+        mMessageEditText =  findViewById(R.id.messageEditText);
+        mSendButton =  findViewById(R.id.sendButton);
 
         // Initialize message ListView and its adapter
         List<FriendlyMessage> friendlyMessages = new ArrayList<>();
@@ -204,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
         mMessageDatabaseReference.addChildEventListener(mChildEventListener);
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -217,8 +226,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
+    protected void onResume() {
+        super.onResume();
         mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
     }
 
@@ -227,6 +236,15 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
+
+    private void OnSignedInInitialised(String displayName) {
+    }
+
+
+    private void onSignedOutCleanUp() {
+    }
+
+
 }
 
 
