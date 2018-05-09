@@ -17,9 +17,12 @@ package com.google.firebase.udacity.friendlychat;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.Layout;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,9 +31,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import android.widget.RelativeLayout;
+import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
 import com.google.firebase.database.ChildEventListener;
@@ -39,6 +45,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String ANONYMOUS = "anonymous";
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
+    // Choose an arbitrary request code value
+    private static final int RC_SIGN_IN = 123;
 
     private ListView mMessageListView;
     private MessageAdapter mMessageAdapter;
@@ -77,6 +86,28 @@ public class MainActivity extends AppCompatActivity {
         mAuthStateListener = new AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+              //Check whether a user is signed in or not
+              FirebaseAuth auth = FirebaseAuth.getInstance();
+              if (auth.getCurrentUser() != null) {
+
+                // already signed in
+                  RelativeLayout view = findViewById(R.id.main_activity);
+                  Snackbar snackbar = Snackbar.make(view, R.string.signed_in, Snackbar.LENGTH_LONG);
+                  snackbar.setAction("Action", null).show();
+
+              } else {
+                // not signed in
+                  startActivityForResult(
+                      AuthUI.getInstance()
+                          .createSignInIntentBuilder()
+                          .setIsSmartLockEnabled(false)
+                          .setAvailableProviders(Arrays.asList(
+                              new AuthUI.IdpConfig.EmailBuilder().build(),
+                              new AuthUI.IdpConfig.GoogleBuilder().build()))
+                          .build(),
+                      RC_SIGN_IN);
+              }
 
             }
         };
