@@ -17,7 +17,6 @@ package com.google.firebase.udacity.friendlychat;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -182,34 +181,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        //This event listens for changes to the database and provides reading our friendlyMessage Java data
-        mChildEventListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                FriendlyMessage friendlyMessage = dataSnapshot.getValue(
-                    com.google.firebase.udacity.friendlychat.FriendlyMessage.class);
-                mMessageAdapter.add(friendlyMessage);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        };
-
-        mMessageDatabaseReference.addChildEventListener(mChildEventListener);
     }
 
 
@@ -228,20 +199,72 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+        if(mAuthStateListener != null){
+            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+            detachDatabaseListener();
+            mMessageAdapter.clear();
+        }
     }
 
     private void OnSignedInInitialised(String displayName) {
+        mUsername = displayName;
+        attachDatabaseListener();
+
     }
 
 
+    //Once we log out we set tje user back to anonymous and we clear the conversation clearing the adapter
     private void onSignedOutCleanUp() {
+        mUsername = ANONYMOUS;
+        mMessageAdapter.clear();
+        detachDatabaseListener();
+    }
+
+    private void attachDatabaseListener(){
+        if(mChildEventListener == null){
+            //This event listens for changes to the database and provides reading our friendlyMessage Java data
+            mChildEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    FriendlyMessage friendlyMessage = dataSnapshot.getValue(
+                            com.google.firebase.udacity.friendlychat.FriendlyMessage.class);
+                    mMessageAdapter.add(friendlyMessage);
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            };
+            //we attach the Child Event listener to our database reference istance.
+            mMessageDatabaseReference.addChildEventListener(mChildEventListener);
+        }
+
+    }
+
+    private void detachDatabaseListener(){
+
+        if(mChildEventListener != null){
+            mMessageDatabaseReference.removeEventListener(mChildEventListener);
+            mChildEventListener = null;
+        }
     }
 
 
