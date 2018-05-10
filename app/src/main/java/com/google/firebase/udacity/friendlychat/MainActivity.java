@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText mMessageEditText;
     private Button mSendButton;
 
+    // Firebase instance variables
     private String mUsername;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mMessageDatabaseReference;
@@ -77,48 +78,11 @@ public class MainActivity extends AppCompatActivity {
 
         mUsername = ANONYMOUS;
 
+        // Initialize Firebase components
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
 
-        mMessageDatabaseReference = mFirebaseDatabase.getReference().child("message");
-        mAuthStateListener = new AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
-              //Check whether a user is signed in or not
-            //  FirebaseAuth auth = FirebaseAuth.getInstance();
-
-             FirebaseUser user = firebaseAuth.getCurrentUser();
-
-
-              if(user != null) {
-                //already signed in
-                  OnSignedInInitialised(user.getDisplayName());
-
-                  RelativeLayout view = findViewById(R.id.main_activity);
-                  Snackbar snackbar = Snackbar.make(view, R.string.signed_in, Snackbar.LENGTH_LONG);
-                  snackbar.setAction("Action", null).show();
-
-              } else {
-                // not signed in
-
-                  onSignedOutCleanUp();
-
-
-                  startActivityForResult(
-                      AuthUI.getInstance()
-                          .createSignInIntentBuilder()
-                          .setIsSmartLockEnabled(false)
-                          .setAvailableProviders(Arrays.asList(
-                              new AuthUI.IdpConfig.EmailBuilder().build(),
-                              new AuthUI.IdpConfig.GoogleBuilder().build()))
-                          .build(),
-                      RC_SIGN_IN);
-              }
-
-            }
-        };
-
+        mMessageDatabaseReference = mFirebaseDatabase.getReference().child("messages");
 
         // Initialize references to views
         mProgressBar =  findViewById(R.id.progressBar);
@@ -181,6 +145,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                if(user != null) {
+                    //user signed in
+                    OnSignedInInitialised(user.getDisplayName());
+
+                    RelativeLayout view = findViewById(R.id.main_activity);
+                    Snackbar snackbar = Snackbar.make(view, R.string.signed_in, Snackbar.LENGTH_LONG);
+                    snackbar.setAction("Action", null).show();
+
+                } else {
+                    // user not signed in
+                    onSignedOutCleanUp();
+
+                    startActivityForResult(
+                            AuthUI.getInstance()
+                                    .createSignInIntentBuilder()
+                                    .setIsSmartLockEnabled(false)
+                                    .setAvailableProviders(Arrays.asList(
+                                            new AuthUI.IdpConfig.EmailBuilder().build(),
+                                            new AuthUI.IdpConfig.GoogleBuilder().build()))
+                                    .build(),
+                            RC_SIGN_IN);
+                }
+            }
+        };
+
     }
 
 
@@ -207,9 +202,9 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         if(mAuthStateListener != null){
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
-            detachDatabaseListener();
-            mMessageAdapter.clear();
         }
+        detachDatabaseListener();
+        mMessageAdapter.clear();
     }
 
     private void OnSignedInInitialised(String displayName) {
@@ -217,7 +212,6 @@ public class MainActivity extends AppCompatActivity {
         attachDatabaseListener();
 
     }
-
 
     //Once we log out we set tje user back to anonymous and we clear the conversation clearing the adapter
     private void onSignedOutCleanUp() {
@@ -232,8 +226,7 @@ public class MainActivity extends AppCompatActivity {
             mChildEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    FriendlyMessage friendlyMessage = dataSnapshot.getValue(
-                            com.google.firebase.udacity.friendlychat.FriendlyMessage.class);
+                    FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
                     mMessageAdapter.add(friendlyMessage);
                 }
 
@@ -266,7 +259,6 @@ public class MainActivity extends AppCompatActivity {
             mChildEventListener = null;
         }
     }
-
 
 }
 
