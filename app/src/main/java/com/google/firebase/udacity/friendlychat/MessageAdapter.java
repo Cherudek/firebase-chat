@@ -23,9 +23,9 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
             convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_message, parent, false);
         }
 
-        ImageView photoImageView = (ImageView) convertView.findViewById(R.id.photoImageView);
-        TextView messageTextView = (TextView) convertView.findViewById(R.id.messageTextView);
-        TextView authorTextView = (TextView) convertView.findViewById(R.id.nameTextView);
+        ImageView photoImageView = convertView.findViewById(R.id.photoImageView);
+        TextView messageTextView = convertView.findViewById(R.id.messageTextView);
+        TextView authorTextView = convertView.findViewById(R.id.nameTextView);
 
         FriendlyMessage message = getItem(position);
 
@@ -35,6 +35,7 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
             photoImageView.setVisibility(View.VISIBLE);
             Glide.with(photoImageView.getContext())
                     .load(message.getPhotoUrl())
+                    .error(R.drawable.missing_image)
                     .into(photoImageView);
         } else {
             messageTextView.setVisibility(View.VISIBLE);

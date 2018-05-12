@@ -38,7 +38,9 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -228,25 +230,25 @@ public class MainActivity extends AppCompatActivity {
                 Uri selectedImageUri = data.getData();
 
                 // Get a reference to store file at chat_photos/<FILENAME>
-            StorageReference photoRef = mChatPhotosStorageReference.child(selectedImageUri.getLastPathSegment());
+            final StorageReference photoRef = mChatPhotosStorageReference.child(selectedImageUri.getLastPathSegment());
 
                 // Upload file to Firebase Storage
             photoRef.putFile(selectedImageUri)
                     .addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
-
+                        @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                                    Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+                            Uri downloadPath = taskSnapshot.getDownloadUrl();
 
-                                    FriendlyMessage friendlyMessage = new FriendlyMessage(null, mUsername, downloadUrl.toString());
+                            FriendlyMessage friendlyMessage = new FriendlyMessage(null, mUsername, downloadPath.toString());
 
-                                    mMessageDatabaseReference.setValue(friendlyMessage);
+                            mMessageDatabaseReference.push().setValue(friendlyMessage);
 
-                                    Log.i(LOG_TAG, "The Firebasebase Download Uri path is: " + downloadUrl);
+                            Log.i(LOG_TAG, "The Firebasebase Download Uri path is: " + downloadPath);
 
                                 }
-                            }
-                    );
+                    });
+
 
         }
 
