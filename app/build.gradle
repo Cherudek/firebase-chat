@@ -46,7 +46,7 @@ dependencies {
     implementation 'com.android.support:support-core-utils:27.1.0'
     // Displaying images
     implementation 'com.github.bumptech.glide:glide:3.7.0'
-    //Firebase dependencies
+    // Firebase dependencies
     implementation 'com.google.firebase:firebase-core:15.0.2'
     //Real Time database dependency
     implementation 'com.google.firebase:firebase-database:15.0.1'
@@ -57,6 +57,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:15.1.0'
     implementation 'com.google.firebase:firebase-storage:15.0.2'
     implementation 'com.google.firebase:firebase-messaging:15.0.2'
+    implementation 'com.google.firebase:firebase-config:15.0.2'
 
 }
 
