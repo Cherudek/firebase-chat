@@ -40,6 +40,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -48,6 +49,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,7 +58,9 @@ public class MainActivity extends AppCompatActivity {
     public static final String ANONYMOUS = "anonymous";
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
     // Choose an arbitrary request code value
-    private static final int RC_SIGN_IN = 123;
+    private static final int RC_SIGN_IN = 1;
+    private static final int RC_PHOTO_PICKER = 2;
+
 
     private ListView mMessageListView;
     private MessageAdapter mMessageAdapter;
@@ -74,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private PhoneAuthProvider mPhoneAuthProvider;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +95,15 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
 
         mMessageDatabaseReference = mFirebaseDatabase.getReference().child("messages");
+
+        //Phone Authorisations setUp
+
+//        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+//                phoneNumber,            // Phone number to verify
+//                60,                  // Timeout duration
+//                TimeUnit.SECONDS,       // Unit of timeout
+//                this,           // Activity (for callback binding)
+//                mCallbacks);            // OnVerificationStateChangedCallbacks
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -140,6 +155,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // TODO: Fire an intent to show an image picker
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/jpeg");
+                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER);
             }
         });
 
